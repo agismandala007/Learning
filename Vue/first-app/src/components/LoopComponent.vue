@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ol>
+        <ol class="list-decimal ml-6">
             <li v-for="todo in todos" :key="todos.id">{{ todo.activity }}</li>
         </ol>
     </div>
