@@ -18,15 +18,16 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	UserRepository := user.NewRepository(db)
-	UserService := user.NewService(UserRepository)
+	userRepository := user.NewRepository(db)
+	userService := user.NewService(userRepository)
 
-	userHandler := handler.NewUserHandler(UserService)
+	userHandler := handler.NewUserHandler(userService)
 
 	router := gin.Default()
 	api := router.Group("api/v1")
 
 	api.POST("/users", userHandler.RegisterUser)
+	api.POST("/users/login", userHandler.LoginUser)
 
 	router.Run()
 
