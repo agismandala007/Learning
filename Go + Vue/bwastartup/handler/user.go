@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bwastartup/auth"
 	"bwastartup/helper"
 	"bwastartup/user"
 	"fmt"
@@ -11,17 +12,17 @@ import (
 
 type userHandler struct {
 	userService user.Service
+	authService auth.Service
 }
 
-func NewUserHandler(userService user.Service) *userHandler {
-	return &userHandler{userService}
+func NewUserHandler(userService user.Service, authService auth.Service) *userHandler {
+	return &userHandler{userService, authService}
 }
 
 func (h *userHandler) RegisterUser(c *gin.Context) {
 	var input user.RegisterUserInput
 
 	err := c.ShouldBindJSON(&input)
-
 	if err != nil {
 		errors := helper.FormatValidationError(err)
 		errorMessage := gin.H{"errors": errors}
@@ -32,14 +33,20 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 	}
 
 	newUser, err := h.userService.RegisterUser(input)
-
 	if err != nil {
 		response := helper.APIResponse("Register account failed", http.StatusBadRequest, "error", nil)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
-	userFormat := user.FormatUser(newUser, "tokenOK")
+	token, err := h.authService.GenerateToken(newUser.ID)
+	if err != nil {
+		respone := helper.APIResponse("JWT failerd", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, respone)
+		return
+	}
+
+	userFormat := user.FormatUser(newUser, token)
 	response := helper.APIResponse("Account has been registered", http.StatusOK, "success", userFormat)
 
 	c.JSON(http.StatusOK, response)
@@ -47,8 +54,8 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 
 func (h *userHandler) LoginUser(c *gin.Context) {
 	var input user.LoginUserInput
-	err := c.ShouldBindJSON(&input)
 
+	err := c.ShouldBindJSON(&input)
 	if err != nil {
 		errors := helper.FormatValidationError(err)
 		errorMessage := gin.H{"errors": errors}
@@ -68,7 +75,14 @@ func (h *userHandler) LoginUser(c *gin.Context) {
 		return
 	}
 
-	userFormat := user.FormatUser(logged, "tokenOK")
+	token, err := h.authService.GenerateToken(logged.ID)
+	if err != nil {
+		respone := helper.APIResponse("JWT failed", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, respone)
+		return
+	}
+
+	userFormat := user.FormatUser(logged, token)
 	response := helper.APIResponse("Login Succesfully", http.StatusOK, "success", userFormat)
 
 	c.JSON(http.StatusOK, response)
