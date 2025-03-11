@@ -1,0 +1,31 @@
+- Home
+ + has
+ 	- Button for connecting to wallet
+ 	- short of collection NFT user has
+ 	- short of transaction user do
+ 	
+ 	Noe:if website has't connected to wallet, just give a information that website hasn't connected
+ 
+ - Shop
+  + Has
+   - information how much nft have
+   - information about a thing that can be converted with a price and images.
+  + Do
+   - User can choose a item that want to.
+   - If user has enough nft there, show modal to let user knew that transaction is good.
+   - If user doens't have enough nft. show modal to let user knew that transction can't be proces due to less of nft.
+ 
+ - Capture
+  - For capturing images and can do recognize images, if a images is not valid, there will be a pop-up or a modal to show the information
+  - If images is valid there will be a modal that show information about transaciton and a notifications
+  
+  
+  - Collection
+   + Has
+    - Collection NFT user has.
+  
+  - Settings
+   - Has
+    - change theme
+    - change languange
+    - give a information about the web
